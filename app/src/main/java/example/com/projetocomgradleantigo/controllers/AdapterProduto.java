@@ -8,7 +8,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import example.com.projetocomgradleantigo.R;
 import example.com.projetocomgradleantigo.models.Produto;
@@ -36,7 +39,10 @@ public class AdapterProduto extends RecyclerView.Adapter<AdapterProduto.MyViewHo
         Produto produto = produtosList.get(position);
         holder.textProduto.setText(produto.getNome());
         holder.textEstoque.setText("Estoque: " + String.valueOf(produto.getEstoque()));
-        holder.textValor.setText("R$ "+String.valueOf(produto.getValor()));
+        NumberFormat numberFormat = NumberFormat.getNumberInstance(Locale.getDefault());
+        numberFormat.setMinimumFractionDigits(2); // Define o mínimo de casas decimais
+        String valorFormatado = numberFormat.format(produto.getValor());
+        holder.textValor.setText("R$ " + valorFormatado);
         holder.itemView.setOnClickListener(view -> {
 
             onClick.onClickListener(produto);

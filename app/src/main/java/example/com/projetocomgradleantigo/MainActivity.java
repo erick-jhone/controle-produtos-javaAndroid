@@ -22,31 +22,41 @@ import java.util.List;
 
 import example.com.projetocomgradleantigo.controllers.AdapterProduto;
 import example.com.projetocomgradleantigo.controllers.FormProdutoActivity;
+import example.com.projetocomgradleantigo.controllers.ProdutoDAO;
 import example.com.projetocomgradleantigo.models.Produto;
 public class MainActivity extends AppCompatActivity implements AdapterProduto.OnClick {
-    private List<Produto> produtoList = new ArrayList<>();
     private SwipeableRecyclerView rvProdutos;
+    private List<Produto> produtoList = new ArrayList<>();
     private AdapterProduto adapterProduto;
     private ImageButton ibAdd;
     private ImageButton ibVerMais;
 
+    private ProdutoDAO produtoDAO;
+
+    private Produto produto;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        produtoDAO = new ProdutoDAO(this);
 
-//        Toolbar toolbar = findViewById(R.id.toolbar);
+        produtoList = produtoDAO.getListProdutos();
+
+
+
         ibAdd = findViewById(R.id.ib_add);
         ibVerMais = findViewById(R.id.ib_ver_mais);
 
         rvProdutos = findViewById(R.id.rvProdutos);
-        carregaLista();
+
         configRecyclerView();
         ouvinteCliques();
 
 
     }
+
+
 
     private void ouvinteCliques(){
         ibAdd.setOnClickListener(view -> {
@@ -69,6 +79,10 @@ public class MainActivity extends AppCompatActivity implements AdapterProduto.On
 
     }
     private void configRecyclerView() {
+
+        produtoList.clear();
+        produtoList = produtoDAO.getListProdutos();
+
         rvProdutos.setLayoutManager(new LinearLayoutManager(this));
         rvProdutos.setHasFixedSize(true);
         adapterProduto = new AdapterProduto(produtoList, this);
@@ -80,7 +94,9 @@ public class MainActivity extends AppCompatActivity implements AdapterProduto.On
 
             @Override
             public void onSwipedRight(int position) {
-                produtoList.remove(position);
+                Produto produto = produtoList.get(position);
+                produtoDAO.delelaProduto(produto);
+                produtoList.remove(produto);
                 adapterProduto.notifyItemRemoved(position);
 
             }
@@ -89,67 +105,16 @@ public class MainActivity extends AppCompatActivity implements AdapterProduto.On
 
     }
 
-    private void carregaLista() {
-
-        Produto produto1 = new Produto();
-        produto1.setNome("Monitor 34 LG");
-        produto1.setEstoque(45);
-        produto1.setValor(1349.99);
-        Produto produto2 = new Produto();
-        produto2.setNome("Smartphone Samsung Galaxy S21");
-        produto2.setEstoque(30);
-        produto2.setValor(999.99);
-        Produto produto3 = new Produto();
-        produto3.setNome("Notebook Dell XPS 13");
-        produto3.setEstoque(20);
-        produto3.setValor(1699.99);
-        Produto produto4 = new Produto();
-        produto4.setNome("Câmera Canon EOS 5D Mark IV");
-        produto4.setEstoque(15);
-        produto4.setValor(2499.99);
-        Produto produto5 = new Produto();
-        produto5.setNome("Fone de Ouvido Sony WH-1000XM4");
-        produto5.setEstoque(50);
-        produto5.setValor(349.99);
-        Produto produto6 = new Produto();
-        produto6.setNome("Máquina de Lavar Roupa LG Inverter");
-        produto6.setEstoque(10);
-        produto6.setValor(799.99);
-        Produto produto7 = new Produto();
-        produto7.setNome("Console de Jogos Xbox Series X");
-        produto7.setEstoque(25);
-        produto7.setValor(499.99);
-        Produto produto8 = new Produto();
-        produto8.setNome("Refrigerador Samsung Side-by-Side");
-        produto8.setEstoque(12);
-        produto8.setValor(1499.99);
-        Produto produto9 = new Produto();
-        produto9.setNome("Impressora HP LaserJet Pro");
-        produto9.setEstoque(18);
-        produto9.setValor(249.99);
-        Produto produto10 = new Produto();
-        produto10.setNome("Bicicleta Trek Dual Sport");
-        produto10.setEstoque(35);
-        produto10.setValor(699.99);
-
-        produtoList.add(produto1);
-        produtoList.add(produto2);
-        produtoList.add(produto3);
-        produtoList.add(produto4);
-        produtoList.add(produto5);
-        produtoList.add(produto6);
-        produtoList.add(produto7);
-        produtoList.add(produto8);
-        produtoList.add(produto9);
-        produtoList.add(produto10);
-
-
-    }
-
-
     @Override
     public void onClickListener(Produto produto) {
-        Toast.makeText(this, produto.getNome(), Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, FormProdutoActivity.class);
+        intent.putExtra("produto", produto);
+        startActivity(intent);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        configRecyclerView();
+    }
 }

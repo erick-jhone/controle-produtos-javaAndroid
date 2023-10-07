@@ -1,7 +1,10 @@
 package example.com.projetocomgradleantigo.models;
 
-public class Produto {
+import java.io.Serializable;
 
+public class Produto implements Serializable {
+
+    private int id;
     private String nome;
     private int estoque;
     private double valor;
@@ -29,4 +32,13 @@ public class Produto {
     public void setValor(double valor) {
         this.valor = valor;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 }
+
